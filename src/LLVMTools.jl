@@ -174,6 +174,17 @@ end
                   UInt64, Nothing)
 end
 
+@inline function clear_cache(p1::Ptr{T}, p2::Ptr{T}) where T
+    Base.llvmcall(("declare void @llvm.clear_cache(i8*, i8*)",
+                   """
+                   %ptr1 = inttoptr i64 %0 to i8*
+                   %ptr2 = inttoptr i64 %1 to i8*
+                   call void @llvm.clear_cache(i8* %ptr1, i8* %ptr2)
+                   ret void
+                   """),
+                  Nothing, Tuple{UInt64, UInt64},
+                  UInt64(p1), UInt64(p1))
+end
 
 # TODO: Standard C Library Intrinsics
 # https://llvm.org/docs/LangRef.html#standard-c-library-intrinsics
