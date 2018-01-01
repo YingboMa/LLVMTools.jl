@@ -191,6 +191,48 @@ end
 
 # TODO: Bit Manipulation Intrinsics
 # https://llvm.org/docs/LangRef.html#bit-manipulation-intrinsics
+@generated function bitreverse(id::T) where T<:Union{Int16, UInt16, Int32, UInt32, Int64, UInt64}
+    typ = llvmtype(T)
+    dec = "declare $typ @llvm.bitreverse.$typ($typ)"
+    instrs = String[]
+    push!(instrs, "%2 = call $typ @llvm.bitreverse.$typ($typ %0)")
+    push!(instrs, "ret $typ %2")
+    quote
+        $(Expr(:meta, :inline))
+        Base.llvmcall(($dec, $(join(instrs, "\n"))),
+                       $T, Tuple{$T}, id)
+    end
+end
+
+# Already in base Julia
+#@generated function lbswap(id::T) where T<:Union{Int16, UInt16, Int32, UInt32, Int64, UInt64}
+#    typ = llvmtype(T)
+#    dec = "declare $typ @llvm.bswap.$typ($typ)"
+#    instrs = String[]
+#    push!(instrs, "%2 = call $typ @llvm.bswap.$typ($typ %0)")
+#    push!(instrs, "ret $typ %2")
+#    quote
+#        $(Expr(:meta, :inline))
+#        Base.llvmcall(($dec, $(join(instrs, "\n"))),
+#                       $T, Tuple{$T}, id)
+#    end
+#end
+
+@generated function ctpop(id::T) where T<:Union{Int8,UInt8,Int16,UInt16,Int32,UInt32,Int64,UInt64,UInt128,Int128}
+    typ = llvmtype(T)
+    dec = "declare $typ @llvm.ctpop.$typ($typ)"
+    instrs = String[]
+    push!(instrs, "%2 = call $typ @llvm.ctpop.$typ($typ %0)")
+    push!(instrs, "ret $typ %2")
+    quote
+        $(Expr(:meta, :inline))
+        Base.llvmcall(($dec, $(join(instrs, "\n"))),
+                       $T, Tuple{$T}, id)
+    end
+end
+
+const ctlz = Core.Intrinsics.ctlz_int
+const cttz = Core.Intrinsics.cttz_int
 
 # TODO: Arithmetic with Overflow Intrinsics
 # https://llvm.org/docs/LangRef.html#arithmetic-with-overflow-intrinsics
