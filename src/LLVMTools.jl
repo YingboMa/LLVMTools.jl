@@ -3,7 +3,13 @@ __precompile__()
 module LLVMTools
 @reexport using SIMD
 import SIMD:llvmins, llvmwrap, llvmconst, llvmtype, suffix
-export va_start, va_end, va_copy, prefetch_r, prefetch_w, pcmarker
+export va_start, va_end, va_copy, prefetch, pcmarker, bitreverse, ctlz,
+       cttz, gcroot, gcread, gcwrite, returnaddress, frameaddress, stacksave,
+       stackrestore, readcyclecounter, clear_cache, bitreverse, ctpop
+
+# TODO: Clean up with e.g. ccall("llvm.clear_cache", llvmcall,
+#                                Nothing, (Ptr{Nothing}, Ptr{Nothing},
+#                                x, y)
 
 # Variable Argument Handling Intrinsics
 # https://llvm.org/docs/LangRef.html#variable-argument-handling-intrinsics
